@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "j8dOl+lOyJE=",
+  "success": true,
+  "projectFilePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Mods\\stk_outfit_stand_bodytype\\Source\\StkOutfitStandBody\\StkOutfitStandBody.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Still\\.nuget\\packages\\krafs.rimworld.ref\\1.6.4566\\krafs.rimworld.ref.1.6.4566.nupkg.sha512",
+    "C:\\Users\\Still\\.nuget\\packages\\lib.harmony\\2.4.1\\lib.harmony.2.4.1.nupkg.sha512",
+    "C:\\Users\\Still\\.nuget\\packages\\rimworld.multiplayerapi\\0.6.0\\rimworld.multiplayerapi.0.6.0.nupkg.sha512"
+  ],
+  "logs": []
+}

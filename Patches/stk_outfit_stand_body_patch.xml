@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationConditional">
+    <xpath>/Defs/ThingDef[defName="Building_OutfitStand"]/comps</xpath>
+      <nomatch Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Building_OutfitStand"]</xpath>
+        <value>
+          <comps />
+        </value>
+      </nomatch>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="Building_OutfitStand"]/comps</xpath>
+        <value>
+          <li Class="StkOutfitStandBody.CompProperties_BodyTypeOverride" />
+        </value>
+  </Operation>
+
+  <!--paint-->
+  <Operation Class="PatchOperationConditional">
+    <xpath>/Defs/ThingDef[@Name="OutfitStandBase"]/building/paintable</xpath>
+      <nomatch Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[@Name="OutfitStandBase"]/building</xpath>
+        <value>
+          <paintable>true</paintable>
+        </value>
+      </nomatch>
+      <match Class="PatchOperationReplace">
+        <xpath>/Defs/ThingDef[@Name="OutfitStandBase"]/building/paintable</xpath>
+        <value>
+          <paintable>true</paintable>
+        </value>
+      </match>
+  </Operation>
+</Patch>

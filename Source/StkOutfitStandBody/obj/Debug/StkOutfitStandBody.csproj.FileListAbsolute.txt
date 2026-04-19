@@ -1,0 +1,15 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.AssemblyInfoInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.AssemblyInfo.cs
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Assemblies\StkOutfitStandBody.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_select_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Assemblies\StkOutfitStandBody.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.AssemblyInfoInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.AssemblyInfo.cs
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfitStandBody.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\stk_outfit_stand_bodytype\Source\StkOutfitStandBody\obj\Debug\StkOutfi.52D295E2.Up2Date
