@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -49,10 +48,10 @@ public static class Patch_InitGraphics_ReplaceBodyTexture
 [HarmonyPatch(typeof(Building_OutfitStand), nameof(Building_OutfitStand.DrawAt))]
 public static class Patch_Building_OutfitStand_DrawAt
 {
-	static readonly MethodInfo getBodyGraphic =
-		AccessTools.Method(typeof(Patch_Building_OutfitStand_DrawAt), nameof(GetBodyGraphic));
 	static readonly FieldInfo bodyGraphic =
 		AccessTools.Field(typeof(Building_OutfitStand), nameof(Building_OutfitStand.bodyGraphic));
+	static readonly MethodInfo getBodyGraphic =
+		AccessTools.Method(typeof(Patch_Building_OutfitStand_DrawAt), nameof(GetBodyGraphic));
 	static readonly MethodInfo getMeshSetForSize =
 		AccessTools.Method(
 			typeof(MeshPool),
