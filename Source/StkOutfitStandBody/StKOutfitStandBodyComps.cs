@@ -2,7 +2,6 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
 using Multiplayer.API;
 
@@ -10,18 +9,10 @@ namespace StkOutfitStandBody;
 
 public class CompBodyTypeOverride : ThingComp
 {
-	// Cache reflection once
-	private static readonly MethodInfo recacheGraphicsMethod =
-		typeof(Building_OutfitStand).GetMethod("RecacheGraphics", BindingFlags.Instance | BindingFlags.NonPublic);
-
+	public BodyTypeDef selectedBodyType = BodyTypeDefOf.Male;
+	private static readonly HashSet<string> excludedDefs = ["Child", "Baby"];
 	private static string GetBodyTypeLabel(BodyTypeDef def)
 		=> def == null ? "" : (!def.label.NullOrEmpty() ? def.LabelCap : def.defName);
-
-	// Skip these body defs
-	private static readonly HashSet<string> excludedDefs = ["Child", "Baby"];
-
-	// Default body
-	public BodyTypeDef selectedBodyType = BodyTypeDefOf.Male;
 
 	public override IEnumerable<Gizmo> CompGetGizmosExtra()
 	{
@@ -57,30 +48,33 @@ public class CompBodyTypeOverride : ThingComp
 						if (comps.Count > 0)
 							SetBodyType(comps, def);
 					}));
+
 				}
 
 				Find.WindowStack.Add(new FloatMenu(options));
 			}
+
 		};
+
 	}
-	
-	[SyncMethod(SyncContext.None)]
-	public void SetBodyType(List<CompBodyTypeOverride> list, BodyTypeDef def)
+
+	[SyncMethod]
+	public void SetBodyType(List<CompBodyTypeOverride> list, BodyTypeDef bodyDef)
 	{
 		foreach (var comp in list)
 		{
-			comp.selectedBodyType = def;
-			recacheGraphicsMethod?.Invoke(comp.parent, null);
+			comp.selectedBodyType = bodyDef;
+			((Building_OutfitStand)comp.parent).RecacheGraphics();
 		}
+
 	}
 
 	private bool IsFirstSelectedStand()
 	{
 		foreach (var selected in Find.Selector.SelectedObjects)
-		{
 			if (selected is Building_OutfitStand stand && stand.GetComp<CompBodyTypeOverride>() != null)
 				return stand == parent; // true if this is the first
-		}
+
 		return false;
 	}
 
@@ -89,17 +83,17 @@ public class CompBodyTypeOverride : ThingComp
 		base.PostExposeData();
 		Scribe_Defs.Look(ref selectedBodyType, "selectedBodyType");
 
-		if (Scribe.mode == LoadSaveMode.PostLoadInit && selectedBodyType == null)
-		{
-			selectedBodyType = DefDatabase<BodyTypeDef>.AllDefs
-				.FirstOrDefault(d => !excludedDefs.Contains(d.defName));
+		//Looks redundant tbh, don't remember why I added this:
+		//if (Scribe.mode == LoadSaveMode.PostLoadInit && selectedBodyType == null)
+		//{
+		//	selectedBodyType = DefDatabase<BodyTypeDef>.AllDefs
+		//		.FirstOrDefault(d => !excludedDefs.Contains(d.defName));
+		//	if (selectedBodyType == null)
+		//		Log.Error("[StkOutfitStand] No valid BodyTypeDef found.");
+		//}
 
-			if (selectedBodyType == null)
-			{
-				Log.Error("[StkOutfitStand] No valid BodyTypeDef found. Gizmo will not work.");
-			}
-		}
 	}
+
 }
 
 public class CompProperties_BodyTypeOverride : CompProperties
@@ -108,4 +102,5 @@ public class CompProperties_BodyTypeOverride : CompProperties
 	{
 		compClass = typeof(CompBodyTypeOverride);
 	}
+
 }

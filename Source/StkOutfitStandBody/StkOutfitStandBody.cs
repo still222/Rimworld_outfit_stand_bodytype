@@ -11,9 +11,11 @@ public static class Startup
 	{
 		var harmony = new Harmony("stk.outfitstandbodytype");
 		harmony.PatchAll();
-		Log.Message("[StkOutfitStandBody] Harmony patches applied.");
 
 		if (MP.enabled)
-			MP.RegisterSyncMethod(typeof(CompBodyTypeOverride), nameof(CompBodyTypeOverride.SetBodyType));
+			MP.RegisterAll();
+
 	}
+
 }
+

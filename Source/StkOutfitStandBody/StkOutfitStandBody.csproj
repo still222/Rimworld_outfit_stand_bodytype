@@ -10,14 +10,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*">
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Lib.Harmony" Version="2.4.1">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4871">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony" Version="2.4.2">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="RimWorld.MultiplayerAPI" Version="0.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp"/>
+    <DoNotPublicize Include="Assembly-CSharp:Verse.Gizmo_Slider;Assembly-CSharp:RimWorld.JobDriver_Flick;Assembly-CSharp:RimWorld.WorkGiver_Flick" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using RimWorld;
@@ -7,97 +9,101 @@ using Verse;
 
 namespace StkOutfitStandBody;
 
-[HarmonyPatch(typeof(Building_OutfitStand), "get_BodyTypeDefForRendering")]
+[HarmonyPatch(typeof(Building_OutfitStand), nameof(Building_OutfitStand.BodyTypeDefForRendering), MethodType.Getter)]
 public static class Patch_OutfitStand_BodyType
 {
-	public static bool Prefix(Building_OutfitStand __instance, ref BodyTypeDef __result)
+	[HarmonyPostfix]
+	public static void Postfix(Building_OutfitStand __instance, ref BodyTypeDef __result)
 	{
 		var comp = __instance.GetComp<CompBodyTypeOverride>();
-		if (comp == null || comp.selectedBodyType == null)
-		{
-			Log.Warning("[StkOutfitStand] No 'selectedBodyType' found from comp, defaulting to Male.");
-			return true;
-		}
 
-		__result = comp.selectedBodyType;
-		return false;
+		if (comp != null && comp.selectedBodyType != null)
+			__result = comp.selectedBodyType;
 	}
+
 }
 
-// Patch for a child outfit stand, just a simple replacer
-[HarmonyPatch(typeof(Building_OutfitStand), "InitGraphics")]
+// Patch for a child outfit stand
+[HarmonyPatch(typeof(Building_OutfitStand), nameof(Building_OutfitStand.InitGraphics))]
 public static class Patch_InitGraphics_ReplaceBodyTexture
 {
+	[HarmonyTranspiler]
 	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 	{
 		var code = new List<CodeInstruction>(instructions);
-		var targetString = "Things/Building/OutfitStand/OutfitStand_BodyChild";
-		var replacementString = "Things/Pawn/Humanlike/Bodies/Naked_Child";
+		string targetString = "Things/Building/OutfitStand/OutfitStand_BodyChild";
+		string replacementString = "Things/Pawn/Humanlike/Bodies/Naked_Child";
 
-		for (int i = 0; i < code.Count; i++)
-		{
-			if (code[i].opcode == OpCodes.Ldstr && code[i].operand is string str && str == targetString)
+		foreach (var instr in code)
+			if (instr.opcode == OpCodes.Ldstr && instr.operand is string str && str == targetString)
 			{
-				code[i].operand = replacementString;
+				instr.operand = replacementString;
+				break;
 			}
-		}
 
 		return code;
 	}
+
 }
 
-// Patch for size of the displayed apparel
-[HarmonyPatch(typeof(Building_OutfitStand), "DrawAt")]
-public static class Patch_DrawAt_ApparelMeshSize
-{
-	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-	{
-		var code = new List<CodeInstruction>(instructions);
-
-		for (int i = 0; i < code.Count; i++)
-		{
-			var instr = code[i];
-
-			// Look for ldc.r4 1.5f (float constant)
-			if (instr.opcode == OpCodes.Ldc_R4 && (float)instr.operand == 1.5f)
-			{
-				// Also check Patch_Building_OutfitStand_DrawAt.DrawSize
-				instr.operand = 1.25f;
-			}
-		}
-
-		return code;
-	}
-}
-
-// "Main" patch, to replace body
-[HarmonyPatch(typeof(Building_OutfitStand), "DrawAt")]
+[HarmonyPatch(typeof(Building_OutfitStand), nameof(Building_OutfitStand.DrawAt))]
 public static class Patch_Building_OutfitStand_DrawAt
 {
-	private static readonly Vector2 DrawSize = new(1.25f, 1.25f);
+	static readonly MethodInfo getBodyGraphic =
+		AccessTools.Method(typeof(Patch_Building_OutfitStand_DrawAt), nameof(GetBodyGraphic));
+	static readonly FieldInfo bodyGraphic =
+		AccessTools.Field(typeof(Building_OutfitStand), nameof(Building_OutfitStand.bodyGraphic));
+	static readonly MethodInfo getMeshSetForSize =
+		AccessTools.Method(
+			typeof(MeshPool),
+			nameof(MeshPool.GetMeshSetForSize),
+			[typeof(float), typeof(float)]
+		);
+	private static readonly float drawMod = 1.25f;	// Originaly 1.5f
+	private static Vector2 drawSize = new(drawMod, drawMod);
 	private static Shader Shader => ShaderDatabase.Cutout;
 
-	static void Prefix(Building_OutfitStand __instance, ref Graphic_Multi __state)
+	[HarmonyTranspiler]
+	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 	{
-		var comp = __instance.GetComp<CompBodyTypeOverride>();
+		var code = new List<CodeInstruction>(instructions);
 
-		if (comp?.selectedBodyType != null)
+		//Log.Message(string.Join("\n", code.Select((x, i) => $"{i}: {x}")));
+
+		int changes = 0;
+		//Graphic_Multi obj = (num ? bodyGraphicChild : bodyGraphic); => GetBodyGraphic
+		//Mesh mesh = MeshPool.GetMeshSetForSize(1.5f, 1.5f).MeshAt(rot); => drawMod
+		for (int i = 0; i < code.Count; i++)
 		{
-			string path = comp.selectedBodyType.bodyNakedGraphicPath;
-			__state = (Graphic_Multi)GraphicDatabase.Get<Graphic_Multi>(
-				path, Shader, DrawSize, Color.white
-			);
+			if (!(code[i].Calls(getMeshSetForSize) || code[i].LoadsField(bodyGraphic)))
+				continue;
+
+			if (code[i].LoadsField(bodyGraphic))
+			{
+				code[i] = new CodeInstruction(OpCodes.Ldarg_0).WithLabels(code[i].labels);;
+				code.Insert(i + 1, new CodeInstruction(OpCodes.Call, getBodyGraphic));
+			}
+
+			else
+			{
+				code[i - 2].operand = drawMod;
+				code[i - 1].operand = drawMod;
+			}
+
+			if (++changes == 2)
+				break;
 		}
+
+		return code;
 	}
 
-	static void Postfix(Building_OutfitStand __instance, Vector3 drawLoc, bool flip, Graphic_Multi __state)
+	static Graphic_Multi GetBodyGraphic(Building_OutfitStand stand)
 	{
-		if (__state != null)
-		{
-			var rot = flip ? __instance.Rotation.Opposite : __instance.Rotation;
-			__state
-				.GetColoredVersion(__state.Shader, __instance.DrawColor, __instance.DrawColorTwo)
-				.Draw(drawLoc.WithYOffset(0.05f), rot, __instance);
-		}
+		return (Graphic_Multi)GraphicDatabase.Get<Graphic_Multi>(
+			stand.BodyTypeDefForRendering.bodyNakedGraphicPath,
+			Shader,
+			drawSize,
+			Color.white);
 	}
+
 }
